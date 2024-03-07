@@ -1,3 +1,7 @@
+# Prototype
+
+This repo contains a prototype of the PostGuard method on top of Filesender. It is a Work In Progress.
+
 # FileSender
 
 [![Build Status](https://travis-ci.org/filesender/filesender.svg?branch=master)](https://travis-ci.org/filesender/filesender)
