@@ -1,6 +1,8 @@
+/node_modules
 /tmp
 /files
-/config/config.php
+#/config/config.php
+/www/js/postguard
 /config/templates
 /config/language
 /docs/_book
