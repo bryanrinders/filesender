@@ -75,7 +75,7 @@ if(Auth::isGuest()) {
 <div class="box">
     <form id="upload_form" class="<?php echo $formClasses; ?>" enctype="multipart/form-data" accept-charset="utf-8" method="post" autocomplete="off" data-need-recipients="<?php echo $need_recipients ? '1' : '' ?>">
         <div class="box">
-            <div class="files" id="fileslist"></div>
+            <!-- <div class="files" id="fileslist"></div> -->
             
             <div class="file_selector">
                 <label for="files" class="mandatory">{tr:select_file} :</label>
@@ -332,6 +332,10 @@ if(Auth::isGuest()) {
                         <input type="hidden" id="guest_transfer_options" value="<?php echo Utilities::sanitizeOutput(json_encode(AuthGuest::getGuest()->transfer_options)) ?>" />
                         <?php } ?>
                         
+                    </div>
+                    <div> 
+                        <input type="file" class="encrypt">encrypt file</input>
+                        <input type="file" class="decrypt">decrypt file</input>
                     </div>
                 </td>
                 <td class="box">
