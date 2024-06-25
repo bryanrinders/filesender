@@ -264,6 +264,7 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
     <?php foreach($sortedFiles as $file) { ?>
         <div class="file" data-id="<?php echo $file->id ?>"
              data-encrypted="<?php echo isset($transfer->options['encryption'])?$transfer->options['encryption']:'false'; ?>"
+             data-password="<?php echo substr($transfer->message, 0, 4) === "_PG_"?substr($transfer->message, 4, strlen($transfer->message)):'false'; ?>"
              data-mime="<?php echo $file->mime_type; ?>"
              data-name="<?php echo $file->path; ?>"
              data-size="<?php echo $file->size; ?>"

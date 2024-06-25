@@ -1218,7 +1218,11 @@ window.filesender.transfer = function() {
         }
         
         var transfer = this;
-        filesender.client.postTransfer(this, function(path, data) {
+        window.postguard.encrypt(this.encryption_password, function(pg_password) {
+            transfer.message = '_PG_' + pg_password
+            console.log(transfer.message)
+
+            filesender.client.postTransfer(transfer, function(path, data) {
             transfer.id = data.id;
             transfer.encryption_salt = data.salt;
             transfer.roundtriptoken  = data.roundtriptoken;
@@ -1268,6 +1272,7 @@ window.filesender.transfer = function() {
             }
         }, function(error) {
             transfer.reportError(error);
+            });
         });
     };
     

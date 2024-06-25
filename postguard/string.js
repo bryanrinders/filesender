@@ -7,8 +7,10 @@ import { KeySorts, fetchKey, PKG_URL } from './utils'
 const modPromise = import('@e4a/pg-wasm')
 let ct
 
-async function encrypt() {
-    const input = document.getElementById('plain').value
+window.postguard = {}
+
+window.postguard.encrypt = async function (input, callback) {
+    // const input = document.getElementById('plain').value
     console.log('input: ', input)
 
     const { seal } = await modPromise
@@ -59,14 +61,20 @@ async function encrypt() {
         console.log(`tEncrypt ${tEncrypt}$ ms`)
         console.log('ct: ', ct)
 
-        const outputEl = document.getElementById('ciphertext')
-        outputEl.value = ct
+        // const outputEl = document.getElementById('ciphertext')
+        // outputEl.value = ct
+
+        // TODO: converting a uint8array to a hex string can be optimized with: https://www.xaymar.com/articles/2020/12/08/fastest-uint8array-to-hex-string-conversion-in-javascript/
+        var pg_password = Array.from(ct)
+            .map((i) => i.toString(16).padStart(2, '0'))
+            .join('')
+        callback(pg_password)
     } catch (e) {
         console.log('error during sealing: ', e)
     }
 }
 
-async function decrypt() {
+window.postguard.decrypt = async function () {
     const { Unsealer } = await modPromise
 
     const vk = await fetch(`${PKG_URL}/v2/sign/parameters`)
@@ -106,10 +114,10 @@ async function decrypt() {
     }
 }
 
-window.onload = async () => {
-    const encBtn = document.getElementById('encrypt-btn')
-    encBtn.addEventListener('click', encrypt)
+// window.onload = async () => {
+//     const encBtn = document.getElementById('encrypt-btn')
+//     encBtn.addEventListener('click', pg_encrypt)
 
-    const decBtn = document.getElementById('decrypt-btn')
-    decBtn.addEventListener('click', decrypt)
-}
+//     const decBtn = document.getElementById('decrypt-btn')
+//     decBtn.addEventListener('click', pg_decrypt)
+// }
