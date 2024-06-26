@@ -216,6 +216,8 @@ $(function() {
                     var client_entropy = $($this).find("[data-id='" + ids[0] + "']").attr('data-client-entropy');
                     var fileiv   = $($this).find("[data-id='" + ids[0] + "']").attr('data-fileiv');
                     var fileaead = $($this).find("[data-id='" + ids[0] + "']").attr('data-fileaead');
+                    var pg_password = $($this).find("[data-id='" + ids[0] + "']").attr('data-password');
+
                     if( fileaead.length ) {
                         fileaead = atob(fileaead);
                     }
@@ -232,7 +234,8 @@ $(function() {
                                                 client_entropy,
                                                 window.filesender.crypto_app().decodeCryptoFileIV(fileiv,key_version),
                                                 fileaead,
-                                                progress );
+                                                progress,
+                                                pg_password );
                 }
             }
             else

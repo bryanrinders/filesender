@@ -5,7 +5,6 @@ import { KeySorts, fetchKey, PKG_URL } from './utils'
 // https://privacybydesign.foundation/attribute-index/en/irma-demo.gemeente.personalData.html
 
 const modPromise = import('@e4a/pg-wasm')
-let ct
 
 window.postguard = {}
 
@@ -74,7 +73,7 @@ window.postguard.encrypt = async function (input, callback) {
     }
 }
 
-window.postguard.decrypt = async function () {
+window.postguard.decrypt = async function (encoded_password, callback, onerror) {
     const { Unsealer } = await modPromise
 
     const vk = await fetch(`${PKG_URL}/v2/sign/parameters`)
@@ -82,6 +81,9 @@ window.postguard.decrypt = async function () {
         .then((j) => j.publicKey)
 
     console.log('retrieved verification key: ', vk)
+
+    var ct = Uint8Array.from(encoded_password.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+    console.log(ct)
 
     try {
         const unsealer = await Unsealer.new(ct, vk)
@@ -107,10 +109,12 @@ window.postguard.decrypt = async function () {
         console.log(`tDecrypt ${tDecrypt}$ ms`)
 
         const original = new TextDecoder().decode(plain)
-        document.getElementById('original').textContent = original
-        document.getElementById('sender').textContent = JSON.stringify(policy)
+        // document.getElementById('original').textContent = original
+        // document.getElementById('sender').textContent = JSON.stringify(policy)
+        callback(original)
     } catch (e) {
         console.log('error during unsealing: ', e)
+        if( onerror ) { onerror() }
     }
 }
 

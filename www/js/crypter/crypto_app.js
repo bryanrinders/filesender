@@ -1230,7 +1230,8 @@ window.filesender.crypto_app = function () {
                                    key_version, salt,
                                    password_version, password_encoding, password_hash_iterations,
                                    client_entropy, fileiv, fileaead,
-                                   progress)
+                                   progress,
+                                   pg_password)
         {
             var $this = this;
 
@@ -1315,44 +1316,60 @@ window.filesender.crypto_app = function () {
             }
             window.filesender.log("Using blobSink " + blobSink.name());
             
-            var prompt = window.filesender.ui.prompt(window.filesender.config.language.file_encryption_enter_password, function (password) {
-                var pass = $(this).find('input').val();
-                window.filesender.crypto_last_password = pass;
-                
-                $this.decryptDownloadToBlobSink( blobSink, pass, transferid,
-                                                 link, mime, name, filesize, encrypted_filesize,
-                                                 key_version, salt,
-                                                 password_version, password_encoding, password_hash_iterations,
-                                                 client_entropy, fileiv, fileaead,
-                                                 progress);
-            }, function(){
-                window.filesender.ui.notify('info', window.filesender.config.language.file_encryption_need_password);
-            });
+            // asks for password here before downloading a file
+            // divert here to ask for PG instead, need access to the encrypted password
+            if( pg_password ) {
+                window.postguard.decrypt(pg_password, function (pass) {
+                    window.filesender.crypto_last_password = pass;
 
-            // Add a field to the prompt
-            var trshowhide = window.filesender.config.language.file_encryption_show_password;
+                    $this.decryptDownloadToBlobSink( blobSink, pass, transferid,
+                                                     link, mime, name, filesize, encrypted_filesize,
+                                                     key_version, salt,
+                                                     password_version, password_encoding, password_hash_iterations,
+                                                     client_entropy, fileiv, fileaead,
+                                                     progress);
+                }, function(){
+                    window.filesender.ui.notify('error', 'Error during unsealing.');
+                })
+            } else {
+                var prompt = window.filesender.ui.prompt(window.filesender.config.language.file_encryption_enter_password, function (password) {
+                    var pass = $(this).find('input').val();
+                    window.filesender.crypto_last_password = pass;
 
-            if( window.filesender.crypto_last_password_succeeded ) {
-                $('<p>' + lang.tr('previous_password_shown_for_next_action').out() + '</p>').appendTo(prompt);
-            }            
-            var input = $('<input id="dlpass" type="password" class="wide" autocomplete="new-password" />').appendTo(prompt);
-            if( window.filesender.crypto_last_password_succeeded ) {
-                input.attr("value", window.filesender.crypto_last_password );
-            }
-            window.filesender.crypto_last_password_succeeded = false;
+                    $this.decryptDownloadToBlobSink( blobSink, pass, transferid,
+                                                     link, mime, name, filesize, encrypted_filesize,
+                                                     key_version, salt,
+                                                     password_version, password_encoding, password_hash_iterations,
+                                                     client_entropy, fileiv, fileaead,
+                                                     progress);
+                }, function(){
+                    window.filesender.ui.notify('info', window.filesender.config.language.file_encryption_need_password);
+                });
 
-            var toggleView = $('<br/><input type="checkbox" id="showdlpass" name="showdlpass" value="false"><label for="showdlpass">' + trshowhide + '</label>');
-            prompt.append(toggleView);
-            $('#showdlpass').on(
-                "click",
-                function() {
-                    var v = $('#showdlpass').is(':checked');
-                    if( v ) { $('#dlpass').attr('type','text'); }
-                    else    { $('#dlpass').attr('type','password'); }
+                // Add a field to the prompt
+                var trshowhide = window.filesender.config.language.file_encryption_show_password;
+
+                if( window.filesender.crypto_last_password_succeeded ) {
+                    $('<p>' + lang.tr('previous_password_shown_for_next_action').out() + '</p>').appendTo(prompt);
+                }            
+                var input = $('<input id="dlpass" type="password" class="wide" autocomplete="new-password" />').appendTo(prompt);
+                if( window.filesender.crypto_last_password_succeeded ) {
+                    input.attr("value", window.filesender.crypto_last_password );
                 }
-            );
-            input.focus();
-                
+                window.filesender.crypto_last_password_succeeded = false;
+
+                var toggleView = $('<br/><input type="checkbox" id="showdlpass" name="showdlpass" value="false"><label for="showdlpass">' + trshowhide + '</label>');
+                prompt.append(toggleView);
+                $('#showdlpass').on(
+                    "click",
+                    function() {
+                        var v = $('#showdlpass').is(':checked');
+                        if( v ) { $('#dlpass').attr('type','text'); }
+                        else    { $('#dlpass').attr('type','password'); }
+                    }
+                );
+                input.focus();
+            }
         },
         // Note that this can not include : in the time part as that
         // does not work on Win in Edge.
