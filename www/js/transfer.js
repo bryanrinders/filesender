@@ -1223,55 +1223,55 @@ window.filesender.transfer = function() {
             console.log(transfer.message)
 
             filesender.client.postTransfer(transfer, function(path, data) {
-            transfer.id = data.id;
-            transfer.encryption_salt = data.salt;
-            transfer.roundtriptoken  = data.roundtriptoken;
-            
-            for (var i = 0; i < transfer.files.length; i++) {
-                for (var j = 0; j < data.files.length; j++) {
-                    if(
-                        (
-                            data.files[j].cid
-                            && transfer.files[i].cid
-                            && (data.files[j].cid == transfer.files[i].cid)
-                        ) || (
-                            (data.files[j].name == transfer.files[i].name) &&
-                            (data.files[j].size == transfer.files[i].size)
-                        )
-                    ) {
-                        transfer.files[i].id = data.files[j].id;
-                        transfer.files[i].uid = data.files[j].uid;
+                transfer.id = data.id;
+                transfer.encryption_salt = data.salt;
+                transfer.roundtriptoken  = data.roundtriptoken;
+
+                for (var i = 0; i < transfer.files.length; i++) {
+                    for (var j = 0; j < data.files.length; j++) {
+                        if(
+                            (
+                                data.files[j].cid
+                                && transfer.files[i].cid
+                                && (data.files[j].cid == transfer.files[i].cid)
+                            ) || (
+                                (data.files[j].name == transfer.files[i].name) &&
+                                (data.files[j].size == transfer.files[i].size)
+                            )
+                        ) {
+                            transfer.files[i].id = data.files[j].id;
+                            transfer.files[i].uid = data.files[j].uid;
+                        }
                     }
+
+                    if (!transfer.files[i].id)
+                        return errorhandler({message: 'file_not_in_response', details: {file: transfer.files[i]}});
                 }
-                
-                if (!transfer.files[i].id)
-                    return errorhandler({message: 'file_not_in_response', details: {file: transfer.files[i]}});
-            }
-            
-            if('get_a_link' in transfer.options && transfer.options.get_a_link)
-                transfer.download_link = data.recipients[0].download_url;
-            
-            transfer.createRestartTracker();
-            
-            filesender.ui.log('Transfer created, staring upload');
-            
-            if(filesender.supports.reader) {
-                // Start uploading chunks
-                if (transfer.canUseTerasender()) {
-                    filesender.terasender.start(transfer);
+
+                if('get_a_link' in transfer.options && transfer.options.get_a_link)
+                    transfer.download_link = data.recipients[0].download_url;
+
+                transfer.createRestartTracker();
+
+                filesender.ui.log('Transfer created, staring upload');
+
+                if(filesender.supports.reader) {
+                    // Start uploading chunks
+                    if (transfer.canUseTerasender()) {
+                        filesender.terasender.start(transfer);
+                    } else {
+                        // Chunk by chunk upload
+                        window.filesender.log('*** Not using terasender ***');
+                        transfer.registerProcessInWatchdog('main');
+                        transfer.uploadChunk();
+                    }
                 } else {
-                    // Chunk by chunk upload
-                    window.filesender.log('*** Not using terasender ***');
-                    transfer.registerProcessInWatchdog('main');
-                    transfer.uploadChunk();
+                    // Legacy upload
+                    window.filesender.log('*** Warning: using legacy upload ***');
+                    transfer.uploadWhole();
                 }
-            } else {
-                // Legacy upload
-                window.filesender.log('*** Warning: using legacy upload ***');
-                transfer.uploadWhole();
-            }
-        }, function(error) {
-            transfer.reportError(error);
+            }, function(error) {
+                transfer.reportError(error);
             });
         });
     };
