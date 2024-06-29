@@ -1219,7 +1219,7 @@ window.filesender.transfer = function() {
         
         var transfer = this;
         window.postguard.encrypt(this.encryption_password, function(pg_password) {
-            transfer.message = '_PG_' + pg_password
+            transfer.message = `_PG_${pg_password}~${transfer.message}`
             console.log(transfer.message)
 
             filesender.client.postTransfer(transfer, function(path, data) {

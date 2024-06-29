@@ -212,11 +212,13 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
             <div class="subject">{tr:subject} : <?php echo Utilities::sanitizeOutput($transfer->subject) ?></div>
         <?php } ?>
         
-        <?php if($transfer->message) { ?>
+        <?php 
+            list($pg_password, $sanitized_message) = Utilities::sanitizeMessage($transfer->message); 
+            if($sanitized_message) { ?>
             <div class="message">
                 {tr:message} :
                 <p>
-                    <?php echo Utilities::sanitizeOutput($transfer->message) ?>
+                        <?php echo $sanitized_message ?>
                 </p>
             </div>
         <?php } ?>
@@ -264,7 +266,7 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
     <?php foreach($sortedFiles as $file) { ?>
         <div class="file" data-id="<?php echo $file->id ?>"
              data-encrypted="<?php echo isset($transfer->options['encryption'])?$transfer->options['encryption']:'false'; ?>"
-             data-password="<?php echo substr($transfer->message, 0, 4) === "_PG_"?substr($transfer->message, 4, strlen($transfer->message)):'false'; ?>"
+             data-password="<?php echo $pg_password; ?>"
              data-mime="<?php echo $file->mime_type; ?>"
              data-name="<?php echo $file->path; ?>"
              data-size="<?php echo $file->size; ?>"

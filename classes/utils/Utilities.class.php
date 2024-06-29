@@ -427,6 +427,29 @@ class Utilities
         return htmlentities($output, ENT_QUOTES, 'UTF-8');
     }
 
+    /**
+     * Split the message into pg_password and the actual message, when
+     * possible, and return as an array. If there is not pg_password
+     * in the message its value is set to 'false'.
+     * 
+     * @param string $message
+     * 
+     * @return array<string,string> $ret
+     */
+    public static function sanitizeMessage($message) {
+        $magic_bytes = '_PG_';
+        $magic_bytes_len = strlen($magic_bytes);
+
+        if(substr($message, 0, $magic_bytes_len) === $magic_bytes) {
+            $splitAt = strpos($message, "~");
+            $pg_password = substr($message, $magic_bytes_len, $splitAt - $magic_bytes_len);
+            $message = substr($message, $splitAt + 1);
+        } else {
+            $pg_password = 'false';
+        }
+        return array($pg_password, $message);
+    }
+
     public static function startsWith($haystack, $needle)
     {
         $length = strlen($needle);
