@@ -1,0 +1,7 @@
+FROM node:22-alpine3.19
+
+COPY package.json package-lock.json webpack.config.js yarn.lock /opt/pg/
+WORKDIR /opt/pg
+RUN yarn
+COPY postguard/ ./postguard
+CMD ["yarn", "watch"]

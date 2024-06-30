@@ -1,0 +1,43 @@
+services:
+  database:
+    image: postgres:buster
+    volumes:
+      # initializes the postgres database
+      - ./database.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./config-templates/postgres/pg_hba.conf:/var/lib/postgres/data/pg_hba.conf
+      # for persistent data uncomment:
+      # - /var/lib/postgresql/data
+    environment:
+      # DB, USER and PASSWORD must be the same as specified in
+      # config/config.php
+      POSTGRES_DB: filesender
+      POSTGRES_USER: filesender
+      POSTGRES_PASSWORD: test
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8'
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - 5432:5432
+  filesender:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.filesender
+    ports:
+      - 8443:443
+    volumes:
+      # - ./log:/opt/filesender/filesender/log
+      # - .files:/opt/filesender/filesender/files
+      # - ./tmp:/opt/filesender/filesender/tmp
+      - ./classes:/opt/filesender/filesender/classes:ro
+      - ./templates:/opt/filesender/filesender/templates:ro
+      - ./www:/opt/filesender/filesender/www
+      - postguardjs:/opt/filesender/filesender/www/js/postguard:ro
+  postguard:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.postguard
+    volumes:
+      - ./postguard:/pg/postguard:ro
+      - postguardjs:/opt/pg/www/js/postguard
+
+volumes:
+  postguardjs:

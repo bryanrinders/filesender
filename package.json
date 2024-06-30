@@ -19,6 +19,7 @@
     "streamsaver": "^2.0.6",
     "style-loader": "^3.3.3",
     "url": "^0.11.0",
+    "watch": "^1.0.2",
     "web-streams-polyfill": "^3.2.1",
     "webpack": "^5.85.1",
     "webpack-cli": "^5.1.3",
@@ -30,6 +31,7 @@
     "util": "^0.12.5"
   },
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "watch": "watch 'yarn webpack' ./postguard"
   }
 }

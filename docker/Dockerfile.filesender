@@ -1,0 +1,71 @@
+FROM php:7.4-apache-buster
+# FROM php:7.4-apache-bullseye
+
+ARG SSP_REF=1.19.5
+ARG SSP_REF_SUM="ab1a71a4eed2c086774829d47ce72137e4d1a7bd6b8a2535b4a1ddfd6e7da51f"
+
+ENV SSP_VERSION=$SSP_REF \
+    SSP_SUM=$SSP_REF_SUM
+
+# - libpq-dev, required to install pgsql
+# - ssl-cert, required by apache (snakeoil certificates, see
+#   /etc/apache2/sites-enabled/default-ssl.conf)
+# https://stackoverflow.com/questions/47603398/docker-php-with-pdo-pgsql-install-issue
+RUN apt update \
+    && apt upgrade -y \
+    && apt install -y libpq-dev ssl-cert \
+    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+    && docker-php-ext-install pdo pdo_pgsql pgsql \
+    && rm -rf /var/lib/apt/lists/*
+# && curl -fsSL https://deb.nodesource.com/setup_21.x | bash - \
+# && apt-get install -y nodejs \
+
+RUN mkdir -pv /opt/filesender/filesender/config
+# RUN mkdir -pv /opt/filesender/simplesamlphp
+
+# RUN curl -L https://github.com/simplesamlphp/simplesamlphp/releases/download/v${SSP_VERSION}/simplesamlphp-${SSP_VERSION}.tar.gz | tar xz \
+#     && ln -s simplesamlphp-${SSP_VERSION} simplesamlphp \
+#     && cd /opt/filesender/simplesamlphp \
+#     && cp -r config-templates/*.php config/ \
+#     && cp -r metadata-templates/*.php metadata/
+
+WORKDIR /opt/filesender/filesender
+
+COPY config/ ./config
+
+RUN mkdir tmp log files \
+    && cp config/config-docker.php config/config.php \
+    && chmod o-rwx tmp files log config/config.php \
+    && chown www-data:www-data tmp log files \
+    && chgrp www-data config/config.php
+
+COPY config-templates/ ./config-templates
+# simplesaml is skipped fake logins are setup in config/config.php
+RUN cp config-templates/apache/filesender.conf /etc/apache2/sites-available/ \
+    && a2enmod alias headers ssl \
+    && a2ensite default-ssl filesender
+
+# TEST if this works; install step 7
+RUN cp config-templates/filesender-php.ini /usr/local/etc/php/php.ini
+
+COPY .php_cs.dist ./.php_cs.dist
+# COPY saucelabs_connect/ ./connect
+# COPY docs/      ./docs
+COPY dev/       ./dev
+COPY language/  ./language
+COPY lib/       ./lib
+COPY optional-dependencies/ ./optional-dependencies
+COPY rpm/       ./rpm
+COPY scripts/   ./scripts
+COPY includes/  ./includes
+COPY classes/   ./classes
+COPY templates/ ./templates
+COPY www/       ./www
+
+# skip cron (step 10)
+
+# MAYBE
+# VOLUME ["/opt/filesender/filesender/tmp", "/opt/filesender/filesender/files", "/opt/filesender/filesender/log"]
+EXPOSE 80 443
+
+CMD ["apache2ctl", "-D", "FOREGROUND"]
