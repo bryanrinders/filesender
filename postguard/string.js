@@ -6,9 +6,15 @@ import { KeySorts, fetchKey, PKG_URL } from './utils'
 
 const modPromise = import('@e4a/pg-wasm')
 
-window.postguard = {}
+window.postguard = {
+    issuer: {
+        email: 'irma-demo.sidn-pbdf.email.email',
+        fullname: 'irma-demo.gemeente.personalData.fullname',
+        bsn: 'irma-demo.gemeente.personalData.bsn',
+    }
+}
 
-window.postguard.encrypt = async function (input, callback) {
+window.postguard.encrypt = async function (input, from, recipients, callback, onerror) {
     // const input = document.getElementById('plain').value
     console.log('input: ', input)
 
@@ -24,22 +30,22 @@ window.postguard.encrypt = async function (input, callback) {
     const policy = {
         Bob: {
             ts: Math.round(Date.now() / 1000),
-            con: [{ t: 'irma-demo.sidn-pbdf.email.email', v: 'bob@example.com' }],
-        },
+            con: [{ t: this.issuer.email, v: recipients[0] }],
+        }
     }
 
     // This policy is visible to everyone.
-    const pubSignId = [{ t: 'irma-demo.gemeente.personalData.fullname', v: 'Alice' }]
+    const pubSignId = [{ t: this.issuer.email, v: from }]
 
     // This policy is only visible to recipients.
-    const privSignId = [{ t: 'irma-demo.gemeente.personalData.bsn', v: '1234' }]
+    // const privSignId = [{ t: this.issuer.bsn, v: '1234' }] // remove this
 
     // We retrieve keys for these policies.
     let { pubSignKey, privSignKey } = await fetchKey(
         KeySorts.Signing,
-        { con: [...pubSignId, ...privSignId] },
+        { con: [...pubSignId]}, //, ...privSignId] },
         undefined,
-        { pubSignId, privSignId }
+        { pubSignId, } // privSignId }
     )
     console.log('got public signing key for Alice: ', pubSignKey)
     console.log('got private signing key for Alice: ', privSignKey)
@@ -54,7 +60,7 @@ window.postguard.encrypt = async function (input, callback) {
     const t0 = performance.now()
 
     try {
-        ct = await seal(mpk, sealOptions, encoded)
+        var ct = await seal(mpk, sealOptions, encoded)
         const tEncrypt = performance.now() - t0
 
         console.log(`tEncrypt ${tEncrypt}$ ms`)
@@ -70,10 +76,11 @@ window.postguard.encrypt = async function (input, callback) {
         callback(pg_password)
     } catch (e) {
         console.log('error during sealing: ', e)
+        if( onerror ) { onerror() }
     }
 }
 
-window.postguard.decrypt = async function (encoded_password, callback, onerror) {
+window.postguard.decrypt = async function (encoded_password, pg_attribute, callback, onerror) {
     const { Unsealer } = await modPromise
 
     const vk = await fetch(`${PKG_URL}/v2/sign/parameters`)
@@ -82,6 +89,7 @@ window.postguard.decrypt = async function (encoded_password, callback, onerror) 
 
     console.log('retrieved verification key: ', vk)
 
+    // convert the hex encode password to a uint8array
     var ct = Uint8Array.from(encoded_password.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
     console.log(ct)
 
@@ -93,7 +101,7 @@ window.postguard.decrypt = async function (encoded_password, callback, onerror) 
         console.log('the header was signed using: ', sender)
 
         const keyRequest = {
-            con: [{ t: 'irma-demo.sidn-pbdf.email.email', v: 'bob@example.com' }],
+            con: [{ t: this.issuer.email, v: pg_attribute }],
         }
 
         const timestamp = header.get('Bob').ts

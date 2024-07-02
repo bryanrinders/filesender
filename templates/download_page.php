@@ -57,6 +57,24 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
 ?>
 <div class="box">
     <h1>{tr:download_page}</h1>
+    <!-- find current user's email -->
+    <!-- copied from upload_page.php -->
+    <div class="fieldcontainer">
+        <!-- find current user's email -->
+        <?php $emails = Auth::isGuest() ? array(AuthGuest::getGuest()->email) : Auth::user()->email_addresses ?>
+        
+        <label for="pg_attr" class="mandatory">PostGuard attribute:</label>
+        
+        <?php if (count($emails) > 1) { ?>
+        
+        <select id="pg_attr" name="pg_attr">
+            <?php foreach ($emails as $email) { ?>
+            <option><?php echo Template::sanitizeOutputEmail($email) ?></option>
+            <?php } ?>
+        </select>
+        
+        <?php } else echo Template::sanitizeOutputEmail($emails[0]) ?>
+    </div>
     
     <?php
 

@@ -177,4 +177,5 @@ $config['db_password'] ='test';
 $config['auth_sp_type'] = 'fake';
 $config['auth_sp_fake_authenticated'] = true;
 $config['auth_sp_fake_uid'] = 1;
-$config['auth_sp_fake_email'] = 'root@localhost.localdomain';
+// add multiple emails for fake switching between "accounts"
+$config['auth_sp_fake_email'] = array('alice@example.com', 'bob@example.com', 'charlie@example.com');

@@ -1231,7 +1231,8 @@ window.filesender.crypto_app = function () {
                                    password_version, password_encoding, password_hash_iterations,
                                    client_entropy, fileiv, fileaead,
                                    progress,
-                                   pg_password)
+                                   pg_password,
+                                   pg_attribute)
         {
             var $this = this;
 
@@ -1318,8 +1319,8 @@ window.filesender.crypto_app = function () {
             
             // asks for password here before downloading a file
             // divert here to ask for PG instead, need access to the encrypted password
-            if( pg_password ) {
-                window.postguard.decrypt(pg_password, function (pass) {
+            if( pg_password && pg_attribute ) {
+                window.postguard.decrypt(pg_password, pg_attribute, function (pass) {
                     window.filesender.crypto_last_password = pass;
 
                     $this.decryptDownloadToBlobSink( blobSink, pass, transferid,

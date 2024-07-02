@@ -217,6 +217,9 @@ $(function() {
                     var fileiv   = $($this).find("[data-id='" + ids[0] + "']").attr('data-fileiv');
                     var fileaead = $($this).find("[data-id='" + ids[0] + "']").attr('data-fileaead');
                     var pg_password = $($this).find("[data-id='" + ids[0] + "']").attr('data-password');
+                    var pg_attribute = $('.fieldcontainer').find('select[name="pg_attr"]').val()
+
+                    console.log('decoded password: ' + pg_password)
 
                     if( fileaead.length ) {
                         fileaead = atob(fileaead);
@@ -235,7 +238,8 @@ $(function() {
                                                 window.filesender.crypto_app().decodeCryptoFileIV(fileiv,key_version),
                                                 fileaead,
                                                 progress,
-                                                pg_password );
+                                                pg_password,
+                                                pg_attribute );
                 }
             }
             else

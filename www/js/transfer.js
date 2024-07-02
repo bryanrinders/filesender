@@ -1218,7 +1218,10 @@ window.filesender.transfer = function() {
         }
         
         var transfer = this;
-        window.postguard.encrypt(this.encryption_password, function(pg_password) {
+        window.postguard.encrypt(this.encryption_password,
+                                 filesender.ui.nodes.from.val(),  // TODO: check if it exists with filesender.ui.nodes.from.length
+                                 filesender.ui.nodes.recipients.list.children().map(function(i) {return $(this).text()}).get(),
+                                 function(pg_password) {
             transfer.message = `_PG_${pg_password}~${transfer.message}`
             console.log(transfer.message)
 
@@ -1248,7 +1251,8 @@ window.filesender.transfer = function() {
                         return errorhandler({message: 'file_not_in_response', details: {file: transfer.files[i]}});
                 }
 
-                if('get_a_link' in transfer.options && transfer.options.get_a_link)
+                // if('get_a_link' in transfer.options && transfer.options.get_a_link)
+                    // I will always need a download link because I dont have an email server set-up
                     transfer.download_link = data.recipients[0].download_url;
 
                 transfer.createRestartTracker();
