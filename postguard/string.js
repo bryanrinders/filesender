@@ -11,6 +11,10 @@ window.postguard = {
         email: 'irma-demo.sidn-pbdf.email.email',
         fullname: 'irma-demo.gemeente.personalData.fullname',
         bsn: 'irma-demo.gemeente.personalData.bsn',
+    },
+
+    get_recipient_name: function (email) {
+        return email.split('@')[0]
     }
 }
 
@@ -27,12 +31,13 @@ window.postguard.encrypt = async function (input, from, recipients, callback, on
 
     console.log('retrieved public key: ', mpk)
 
-    const policy = {
-        Bob: {
+    const policy = recipients.reduce((acc, recipient) => {
+        var recipient_name = this.get_recipient_name(recipient)
+        return { ...acc, [recipient_name]: {
             ts: Math.round(Date.now() / 1000),
-            con: [{ t: this.issuer.email, v: recipients[0] }],
-        }
-    }
+            con: [{ t: this.issuer.email, v: recipient }]
+        }}}, {}
+    )
 
     // This policy is visible to everyone.
     const pubSignId = [{ t: this.issuer.email, v: from }]
@@ -104,13 +109,14 @@ window.postguard.decrypt = async function (encoded_password, pg_attribute, callb
             con: [{ t: this.issuer.email, v: pg_attribute }],
         }
 
-        const timestamp = header.get('Bob').ts
+        const recipient_name = this.get_recipient_name(pg_attribute)
+        const timestamp = header.get(recipient_name).ts
         const usk = await fetchKey(KeySorts.Encryption, keyRequest, timestamp)
 
         console.log('retrieved usk: ', usk)
 
         const t0 = performance.now()
-        const [plain, policy] = await unsealer.unseal('Bob', usk)
+        const [plain, policy] = await unsealer.unseal(recipient_name, usk)
 
         const tDecrypt = performance.now() - t0
 
