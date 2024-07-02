@@ -447,7 +447,7 @@ class Utilities
         } else {
             $pg_password = 'false';
         }
-        return array($pg_password, $message);
+        return array($pg_password, self::sanitizeOutput($message));
     }
 
     public static function startsWith($haystack, $needle)
