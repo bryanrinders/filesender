@@ -397,3 +397,4 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
     </div>
 
 <script type="text/javascript" src="{path:js/download_page.js}"></script>
+<script type="text/javascript" src="{path:js/postguard/string.js}"></script>

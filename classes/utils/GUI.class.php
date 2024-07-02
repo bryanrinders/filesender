@@ -127,9 +127,6 @@ class GUI
         }
 
         array_push( $sources,
-		    // temporarily always source the postguard script
-		            'js/postguard/string.js',
-
                     'lib/jquery/jquery.min.js',
                     'lib/jquery-ui/jquery-ui.min.js',
                     'lib/promise-polyfill/polyfill.min.js',

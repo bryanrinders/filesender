@@ -454,4 +454,5 @@ if(Auth::isGuest()) {
        <script type="text/javascript" src="{path:js/dragdrop-dirtree.js}"></script>
     <?php } ?>
     <script type="text/javascript" src="{path:js/upload_page.js}"></script>
+    <script type="text/javascript" src="{path:js/postguard/string.js}"></script>
 </div>
