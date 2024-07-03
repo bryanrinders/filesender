@@ -310,6 +310,12 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
                 <span class="fa fa-2x fa-download"></span>
                 {tr:download}
             </a>
+            <?php if($pg_password) { ?>
+                <a rel="nofollow" href="<?php echo empty($downloadLinks[$file->id]) ? '#' : Utilities::sanitizeOutput($downloadLinks[$file->id]) ?>" class="download pg_download" title="{tr:download_file}">
+                    <span class="fa fa-2x fa-download"></span>
+                    PostGuard Download
+                </a>
+            <?php } ?>
             <span class="downloadprogress"/>
             <?php if($showdownloadlinks) { ?>
             <br>

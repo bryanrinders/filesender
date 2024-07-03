@@ -86,7 +86,8 @@ $(function() {
     var m = window.location.search.match(/token=([0-9a-f-]+)/);
     var token = m[1];
     var $this = this;
-    var dl = function(ids, confirm, encrypted, progress, archive_format ) {
+    // downloading of files
+    var dl = function(ids, confirm, encrypted, progress, archive_format, is_pg_download ) {
         if(typeof ids == 'string') ids = [ids];
         
         // the dlcb handles starting the download for
@@ -216,8 +217,13 @@ $(function() {
                     var client_entropy = $($this).find("[data-id='" + ids[0] + "']").attr('data-client-entropy');
                     var fileiv   = $($this).find("[data-id='" + ids[0] + "']").attr('data-fileiv');
                     var fileaead = $($this).find("[data-id='" + ids[0] + "']").attr('data-fileaead');
-                    var pg_password = $($this).find("[data-id='" + ids[0] + "']").attr('data-password');
-                    var pg_attribute = $('.fieldcontainer').find('select[name="pg_attr"]').val()
+                    var pg_password = false;
+                    var pg_attribute = false;
+
+                    if(is_pg_download) {
+                        pg_password = $($this).find("[data-id='" + ids[0] + "']").attr('data-password');
+                        pg_attribute = $('.fieldcontainer').find('select[name="pg_attr"]').val();
+                    }
 
                     console.log('decoded password: ' + pg_password)
 
@@ -251,7 +257,8 @@ $(function() {
     };
     
     // Bind download buttons
-    page.find('.file .download').button().on('click', function() {
+    page.find('.file .download').button().on('click', function(event) {
+        var is_pg_download = event.target.className.split(' ').includes('pg_download')
         var id = $(this).closest('.file').attr('data-id');
         var encrypted = $(this).closest('.file').attr('data-encrypted');
         var progress = $(this).closest('.file').find('.downloadprogress');
@@ -266,7 +273,7 @@ $(function() {
 
         
         filesender.client.getTransferOption(transferid, 'enable_recipient_email_download_complete', token, function(dl_complete_enabled){
-            dl(id, dl_complete_enabled, encrypted, progress );
+            dl(id, dl_complete_enabled, encrypted, progress, null, is_pg_download);
         });        
         return false;
     });
