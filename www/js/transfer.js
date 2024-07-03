@@ -1218,6 +1218,11 @@ window.filesender.transfer = function() {
         }
         
         var transfer = this;
+        // I will always need a download link, because I dont have an email
+        // server set-up. This does have the side effect that the message
+        // does not show in the 'My Transfers' tab, but it does show on the
+        // download page.
+        transfer.options.get_a_link = true;
         window.postguard.encrypt(this.encryption_password,
                                  filesender.ui.nodes.from.val(),  // TODO: check if it exists with filesender.ui.nodes.from.length
                                  filesender.ui.nodes.recipients.list.children().map(function(i) {return $(this).text()}).get(),
@@ -1251,8 +1256,7 @@ window.filesender.transfer = function() {
                         return errorhandler({message: 'file_not_in_response', details: {file: transfer.files[i]}});
                 }
 
-                // if('get_a_link' in transfer.options && transfer.options.get_a_link)
-                    // I will always need a download link because I dont have an email server set-up
+                if('get_a_link' in transfer.options && transfer.options.get_a_link)
                     transfer.download_link = data.recipients[0].download_url;
 
                 transfer.createRestartTracker();
