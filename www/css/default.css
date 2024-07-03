@@ -1581,6 +1581,7 @@ table.guests .guest .to .errors .details {
 #encryption_password_container_generate,
 #encryption_password_container_generate_again,
 #encryption_password_show_container,
+#pg_encryption_checkbox_container,
 #encryption_description_container_disabled,
 #encryption_description_not_supported,
 .download_decryption_disabled,

@@ -1223,13 +1223,7 @@ window.filesender.transfer = function() {
         // does not show in the 'My Transfers' tab, but it does show on the
         // download page.
         transfer.options.get_a_link = true;
-        window.postguard.encrypt(this.encryption_password,
-                                 filesender.ui.nodes.from.val(),  // TODO: check if it exists with filesender.ui.nodes.from.length
-                                 filesender.ui.nodes.recipients.list.children().map(function(i) {return $(this).text()}).get(),
-                                 function(pg_password) {
-            transfer.message = `_PG_${pg_password}~${transfer.message}`
-            console.log(transfer.message)
-
+        var _postTransfer = function () {
             filesender.client.postTransfer(transfer, function(path, data) {
                 transfer.id = data.id;
                 transfer.encryption_salt = data.salt;
@@ -1281,7 +1275,19 @@ window.filesender.transfer = function() {
             }, function(error) {
                 transfer.reportError(error);
             });
-        });
+        }
+
+        if(filesender.ui.transfer.use_pg_encryption) {
+            postguard.encrypt(this.encryption_password,
+                filesender.ui.nodes.from.val(),  // TODO: check if it exists with filesender.ui.nodes.from.length
+                transfer.recipients,
+                function(pg_password) {
+                    transfer.message = `_PG_${pg_password}~${transfer.message}`
+                    _postTransfer()
+                });
+        } else {
+            _postTransfer()
+        }
     };
     
     /**

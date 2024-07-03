@@ -1461,7 +1461,8 @@ $(function() {
             show_hide: form.find('#encryption_show_password'),
             generate:      form.find('#encryption_generate_password'),
             use_generated: form.find('#encryption_use_generated_password'),
-            generate_again: form.find('#encryption_password_container_generate_again')
+            generate_again: form.find('#encryption_password_container_generate_again'),
+            use_pg_encryption: form.find('input[name="pg_encryption"]')
         },
         uploading_actions_msg:form.find('.uploading_actions .msg'),
         auto_resume_timer:form.find('.uploading_actions .auto_resume_timer'),
@@ -1752,6 +1753,7 @@ $(function() {
         $('#encryption_password_container_generate').slideToggle();
         $('#encryption_password_show_container').slideToggle();
         $('#encryption_description_container').slideToggle();
+        $('#pg_encryption_checkbox_container').slideToggle();
         filesender.ui.transfer.encryption = filesender.ui.nodes.encryption.toggle.is(':checked');
         filesender.ui.files.checkEncryptionPassword(filesender.ui.nodes.encryption.password, true );
     }
@@ -1762,6 +1764,7 @@ $(function() {
         $('#encryption_password_container_generate').slideToggle();
         $('#encryption_password_show_container').slideToggle();
         $('#encryption_description_container').slideToggle();
+        $('#pg_encryption_checkbox_container').slideToggle();
         filesender.ui.transfer.encryption = filesender.ui.nodes.encryption.toggle.is(':checked');
 
         filesender.ui.files.checkEncryptionPassword(filesender.ui.nodes.encryption.password, true );
@@ -1826,6 +1829,19 @@ $(function() {
         filesender.ui.files.checkEncryptionPassword(filesender.ui.nodes.encryption.password, true );
         filesender.ui.evalUploadEnabled();
     });
+
+    // set default value and bind the checkbox to toggle postguard encryption
+    filesender.ui.transfer.use_pg_encryption = filesender.ui.nodes.encryption.use_pg_encryption.is(':checked');
+    filesender.ui.nodes.encryption.use_pg_encryption.on('change', function() {
+        filesender.ui.transfer.use_pg_encryption = filesender.ui.nodes.encryption.use_pg_encryption.is(':checked');
+        if(filesender.ui.transfer.use_pg_encryption) {
+            // postguard need recipients to be specified. This is a little
+            // hacky to make sure the recipient input boxes will be displayed.
+            var gal = form.find('input[name="get_a_link"]')
+            gal.attr('checked', true)
+            gal.click()
+        }
+    })
 
     if( filesender.config.encryption_mandatory_with_generated_password ) {
         setTimeout( function() {
