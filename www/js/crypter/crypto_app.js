@@ -1329,8 +1329,9 @@ window.filesender.crypto_app = function () {
                                                      password_version, password_encoding, password_hash_iterations,
                                                      client_entropy, fileiv, fileaead,
                                                      progress);
-                }, function(){
-                    window.filesender.ui.notify('error', 'Error during unsealing.');
+                }, function(message){
+                    message = message ? message : 'Error during unsealing'
+                    window.filesender.ui.notify('error', message);
                 })
             } else {
                 var prompt = window.filesender.ui.prompt(window.filesender.config.language.file_encryption_enter_password, function (password) {

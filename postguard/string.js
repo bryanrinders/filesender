@@ -98,6 +98,8 @@ window.postguard.decrypt = async function (encoded_password, pg_attribute, callb
     var ct = Uint8Array.from(encoded_password.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
     console.log(ct)
 
+    var err_msg = 'Error during unsealing'
+
     try {
         const unsealer = await Unsealer.new(ct, vk)
         const header = unsealer.inspect_header()
@@ -110,6 +112,10 @@ window.postguard.decrypt = async function (encoded_password, pg_attribute, callb
         }
 
         const recipient_name = this.get_recipient_name(pg_attribute)
+        if(!header.has(recipient_name)) {
+            err_msg = 'Pick a different attribute.'
+            throw new Error('Wrong PostGuard Attribute')
+        }
         const timestamp = header.get(recipient_name).ts
         const usk = await fetchKey(KeySorts.Encryption, keyRequest, timestamp)
 
@@ -128,7 +134,7 @@ window.postguard.decrypt = async function (encoded_password, pg_attribute, callb
         callback(original)
     } catch (e) {
         console.log('error during unsealing: ', e)
-        if( onerror ) { onerror() }
+        if( onerror ) { onerror(err_msg) }
     }
 }
 
