@@ -121,7 +121,7 @@ class AuthSPFake
             }
             
             if (!$attributes['name']) {
-                $attributes['name'] = substr($attributes['email'], 0, strpos($attributes['email'], '@'));
+                $attributes['name'] = substr($attributes['email'][0], 0, strpos($attributes['email'][0], '@'));
             }
             
             // Build additional attributes
