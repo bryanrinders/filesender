@@ -1,5 +1,5 @@
 <?php
-$config['use_strict_csp'] = false;
+$config['use_strict_csp'] = true;
 
 /*
  * FileSender www.filesender.org

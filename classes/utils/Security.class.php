@@ -42,6 +42,13 @@ if (!defined('FILESENDER_BASE')) {
  */
 class Security
 {
+    // avoid any use of 'unsafe-inline'
+    public static $CSP_DEF = "default-src 'self'; "
+                           . " object-src 'self'; "
+                           . " img-src 'self' data:; "
+                           . " media-src 'none'; "
+                           . " frame-src 'self'; "
+                           . " font-src 'self'; ";
 
     /**
      *  
@@ -70,22 +77,31 @@ class Security
         //
         // Build a default Content-Security-Policy reply and output it if desired.
         //
-        // avoid any use of 'unsafe-inline'
-        //
-        $csp = "default-src 'self'; "
+        $csp = self::$CSP_DEF
+             . " connect-src 'self';"
              . " script-src 'self'; "
-             . " object-src 'self'; "
-             . " style-src 'self' ; "
-             . " img-src 'self' data:; "
-             . " media-src 'none'; "
-             . " frame-src 'self'; "
-             . " font-src 'self'; "
-             . " connect-src 'self'";
+             . " style-src 'self'; ";
 
         if( Utilities::isTrue(Config::get('use_strict_csp'))) {
             header( 'Content-Security-Policy: ' . $csp, false );
-            header( 'X-Content-Security-Policy: ' . $csp, false );
-            header( 'X-WebKit-CSP: ' . $csp, false );
+        }
+    }
+
+    /**
+     * Overrides the Content-Security-Policy set by self::addHTTPHeaders
+     * for postguard.
+     */
+    // TODO: fine tune the headers, for extra security. Maybe use nonces.
+    public static function addHTTPHeadersPG()
+    {
+        if( Utilities::isTrue(Config::get('use_strict_csp'))) {
+            $csp_pg = self::$CSP_DEF
+                    . " script-src 'self' 'wasm-unsafe-eval'; " 
+                    . " style-src 'self' 'unsafe-inline'; "
+                    // the url is the same as the PKG_URL defined in
+                    // postguard/utils.js, without the path.
+                    . " connect-src 'self' https://postguard-main.cs.ru.nl/;";
+            header( 'Content-Security-Policy: ' . $csp_pg);
         }
     }
 

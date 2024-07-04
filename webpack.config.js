@@ -9,6 +9,7 @@ const webpackMode = 'development'
 module.exports = {
     name: 'postguard',
     mode: webpackMode,
+    devtool: "source-map",
     entry: {
         string: './postguard/string.js',
         file: './postguard/file.js',

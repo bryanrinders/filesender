@@ -1590,6 +1590,11 @@ table.guests .guest .to .errors .details {
     display: none;
 }
 
+#pg_encryption_description_container {
+    padding-left:20px;
+    padding-top:10px;
+}
+
 
 .adminaction {
     background: #ffeeee;

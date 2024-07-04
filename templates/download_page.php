@@ -1,5 +1,7 @@
 <?php
 
+Security::addHTTPHeadersPG();
+
 $canDownload = true;
 
 if (!function_exists('str_starts_with')) {

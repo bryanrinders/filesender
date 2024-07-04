@@ -1,5 +1,7 @@
 <?php
 
+Security::addHTTPHeadersPG();
+
 $guest_can_only_send_to_creator = false;
 $encryption_mandatory = Principal::isEncryptionMandatory();
 $encryption_checkbox_checked = '';
@@ -320,7 +322,7 @@ if(Auth::isGuest()) {
                         <div class="fieldcontainer" id="pg_encryption_checkbox_container" data-related-to="encryption">
                             <input id="pg_encryption" name="pg_encryption" type="checkbox">
                             <label for="pg_encryption" class="cursor" >Use PostGuard for encryption</label>
-                            <div class="fieldcontainer" id="pg_encryption_description_container" style="padding-left:20px;padding-top:10px">
+                            <div class="fieldcontainer" id="pg_encryption_description_container">
                             PostGuard description goes here.
                             </div>
                         </div>
