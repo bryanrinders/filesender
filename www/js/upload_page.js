@@ -1767,6 +1767,11 @@ $(function() {
         $('#pg_encryption_checkbox_container').slideToggle();
         filesender.ui.transfer.encryption = filesender.ui.nodes.encryption.toggle.is(':checked');
 
+        // make sure postguard encryption is turned off when unchecking normal encryption
+        if(!filesender.ui.transfer.encryption && filesender.ui.nodes.encryption.use_pg_encryption) {
+            filesender.ui.nodes.encryption.use_pg_encryption.click()
+        }
+
         filesender.ui.files.checkEncryptionPassword(filesender.ui.nodes.encryption.password, true );
 
         for(var i=0; i<filesender.ui.transfer.files.length; i++) {
@@ -1834,12 +1839,13 @@ $(function() {
     filesender.ui.transfer.use_pg_encryption = filesender.ui.nodes.encryption.use_pg_encryption.is(':checked');
     filesender.ui.nodes.encryption.use_pg_encryption.on('change', function() {
         filesender.ui.transfer.use_pg_encryption = filesender.ui.nodes.encryption.use_pg_encryption.is(':checked');
-        if(filesender.ui.transfer.use_pg_encryption) {
-            // postguard need recipients to be specified. This is a little
-            // hacky to make sure the recipient input boxes will be displayed.
             var gal = form.find('input[name="get_a_link"]')
-            gal.attr('checked', true)
-            gal.click()
+        if(filesender.ui.transfer.use_pg_encryption) {
+            // postguard needs recipients to be specified. 
+            if(gal.is(':checked')) { gal.click() }
+            gal.attr('disabled', true)
+        } else {
+            gal.attr('disabled', false)
         }
     })
 
