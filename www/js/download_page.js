@@ -52,6 +52,19 @@ $(function() {
         $('.archivefileids').attr('value', idlist );
     }
     
+    // Populate postguard attributes with the email addresses of all recipients
+    var pg_password = $('#pg_password').attr('data-password')
+    var pg_attributes_select = $('#pg_attributes_select')
+    if(pg_password === 'false') {
+        pg_password = false
+        pg_attributes_select.parent().hide()
+    } else {
+        window.postguard.get_ct_header(pg_password, function(pg_header) {
+            pg_header.forEach(function(_, key, _){
+                pg_attributes_select.append(`<option value="${key}">${key}</option>`)
+            })
+        }) // TODO add onerror function (remove pg download button)
+    }    
     // Bind file selectors
     page.find('.file .select').on('click', function() {
         var el = $(this);
@@ -217,15 +230,11 @@ $(function() {
                     var client_entropy = $($this).find("[data-id='" + ids[0] + "']").attr('data-client-entropy');
                     var fileiv   = $($this).find("[data-id='" + ids[0] + "']").attr('data-fileiv');
                     var fileaead = $($this).find("[data-id='" + ids[0] + "']").attr('data-fileaead');
-                    var pg_password = false;
                     var pg_attribute = false;
 
                     if(is_pg_download) {
-                        pg_password = $($this).find("[data-id='" + ids[0] + "']").attr('data-password');
-                        pg_attribute = $('.fieldcontainer').find('select[name="pg_attr"]').val();
+                        pg_attribute = pg_attributes_select.val();
                     }
-
-                    console.log('decoded password: ' + pg_password)
 
                     if( fileaead.length ) {
                         fileaead = atob(fileaead);

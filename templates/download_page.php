@@ -61,21 +61,11 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
     <h1>{tr:download_page}</h1>
     <!-- find current user's email -->
     <!-- copied from upload_page.php -->
-    <div class="fieldcontainer">
-        <!-- find current user's email -->
-        <?php $emails = Auth::isGuest() ? array(AuthGuest::getGuest()->email) : Auth::user()->email_addresses ?>
-        
-        <label for="pg_attr" class="mandatory">PostGuard attribute:</label>
-        
-        <?php if (count($emails) > 1) { ?>
-        
-        <select id="pg_attr" name="pg_attr">
-            <?php foreach ($emails as $email) { ?>
-            <option><?php echo Template::sanitizeOutputEmail($email) ?></option>
-            <?php } ?>
+    <div class="fieldcontainer" id="pg_attributes_container">
+        <!-- list of recipient email addresses -->
+        <label for="pg_attributes_select" class="mandatory">PostGuard attribute:</label>
+        <select id="pg_attributes_select" name="pg_attributes_select">
         </select>
-        
-        <?php } else echo Template::sanitizeOutputEmail($emails[0]) ?>
     </div>
     
     <?php
@@ -274,6 +264,7 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
         </div>
     <?php } ?>
     <div class="files box" data-count="<?php echo ($canDownloadArchive)?count($sortedFiles):'1' ?>">
+        <div id="pg_password" data-password="<?php echo $pg_password; ?>"></div>
         <?php if($canDownloadArchive) { ?>
         <div class="select_all">
             <span class="fa fa-lg fa-mail-reply fa-rotate-270"></span>

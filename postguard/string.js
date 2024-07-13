@@ -14,8 +14,52 @@ window.postguard = {
     },
 
     get_recipient_name: function (email) {
-        return email.split('@')[0]
-    }
+        // Return the full email, which will be used as the key in the
+        // encryption policy. A hacky solution to make it easy to
+        // populate a selection menu with recipients' email addresses
+        // on the download page.
+        return email // email.split('@')[0]
+    },
+
+    /**
+     * Convert a hex encode password into a Uint8Array
+     */
+    decode_password: function (encoded_password) {
+        return Uint8Array.from(encoded_password.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)))
+    },
+
+    /**
+     * Call callback on the header of hex encode password encoded_password.
+     * If the callback is not supplied return the unsealer and the header.
+     * The return value is undefined if errors occur during unsealing.
+     */
+    get_ct_header: async function (encoded_password, callback, onerror) {
+        const { Unsealer } = await modPromise
+    
+        const vk = await fetch(`${PKG_URL}/v2/sign/parameters`)
+            .then((r) => r.json())
+            .then((j) => j.publicKey)
+    
+        // console.log(this)
+        const ct = this.decode_password(encoded_password)
+        var err_msg = 'Error during unsealing'
+    
+        try {
+            const unsealer = await Unsealer.new(ct, vk)
+            const header = unsealer.inspect_header()
+            if(callback) {
+                callback(header)
+            } else {
+                return {
+                    "unsealer": unsealer,
+                    "header": header
+                }
+            }
+        } catch (e) {
+            console.log(e)
+            if( onerror ) { onerror(err_msg) }
+        }
+    },
 }
 
 window.postguard.encrypt = async function (input, from, recipients, callback, onerror) {
@@ -86,35 +130,24 @@ window.postguard.encrypt = async function (input, from, recipients, callback, on
 }
 
 window.postguard.decrypt = async function (encoded_password, pg_attribute, callback, onerror) {
-    const { Unsealer } = await modPromise
-
-    const vk = await fetch(`${PKG_URL}/v2/sign/parameters`)
-        .then((r) => r.json())
-        .then((j) => j.publicKey)
-
-    console.log('retrieved verification key: ', vk)
-
-    // convert the hex encode password to a uint8array
-    var ct = Uint8Array.from(encoded_password.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
-    console.log(ct)
-
     var err_msg = 'Error during unsealing'
+    const unsealer_header = await this.get_ct_header(encoded_password)
 
     try {
-        const unsealer = await Unsealer.new(ct, vk)
-        const header = unsealer.inspect_header()
-        console.log('header contains the following recipients: ', header)
-        const sender = unsealer.public_identity()
-        console.log('the header was signed using: ', sender)
-
-        const keyRequest = {
-            con: [{ t: this.issuer.email, v: pg_attribute }],
+        if(!unsealer_header || !unsealer_header.header || !unsealer_header.unsealer) {
+            throw new Error('Error during unsealing.')
         }
 
+        const unsealer = unsealer_header.unsealer
+        const header = unsealer_header.header
         const recipient_name = this.get_recipient_name(pg_attribute)
         if(!header.has(recipient_name)) {
             err_msg = 'Pick a different attribute.'
             throw new Error('Wrong PostGuard Attribute')
+        }
+
+        const keyRequest = {
+            con: [{ t: this.issuer.email, v: pg_attribute }],
         }
         const timestamp = header.get(recipient_name).ts
         const usk = await fetchKey(KeySorts.Encryption, keyRequest, timestamp)
