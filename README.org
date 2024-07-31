@@ -1,0 +1,24 @@
+#+TITLE: Filesender + PostGuard Prototype
+#+SUBTITLE: README
+#+AUTHOR: Bryan Rinders
+#+DATE: <2024-07-31 Wed>
+#+OPTIONS: ^:{} toc:nil num:nil
+#+PROPERTY: header-args :exports code :eval no-export
+
+This repo contains a prototype, integrating [[https://postguard.eu][PostGuard]] (PG) into
+Filesender. PG is an encryption service that is privacy- and
+user-friendly. Using PG, uploaders nolonger have to manually distribute
+the encryption password to the recipients. For more details see the
+[[https://gitlab.com/postguard-filesender/thesis][thesis]] I wrote about this.
+
+* Usage
+The easiest way to get started and try out the newly added
+functionality is with docker.
+
+#+begin_src
+  git clone https://gitlab.com/postguard-filesender/filesender.git --depth 1
+  cd filesender
+  docker-compose -f docker-compose.yaml up -d --build
+#+end_src
+
+Then open your browser and go to [[https://localhost:8443/filesender]].
