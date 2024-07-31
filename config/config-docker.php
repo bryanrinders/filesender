@@ -1,4 +1,9 @@
 <?php
+// Limit the upload file size to 10MiB, because disk space is
+// expensive.
+$config['max_transfer_file_size'] = 10 * 1024 * 1024;
+$config['max_transfer_encrypted_file_size'] = 10 * 1024 * 1024;
+
 // The src-script and src-style creates errors.
 $config['use_strict_csp'] = true;
 
