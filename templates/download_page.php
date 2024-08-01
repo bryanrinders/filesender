@@ -57,6 +57,29 @@ if( Utilities::isTrue(Config::get('download_verification_code_enabled'))) {
 $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links'));
 
 ?>
+<div class='box'>
+    <table class='two_columns' id='pg_intro'>
+    <tbody><tr><td class='box'>
+    <h2>Prototype: Filesender + PostGuard</h2>
+    <p>
+    This is a prototype, integrating <a href='https://postguard.eu'>PostGuard</a> (PG) into
+    Filesender. PG is an encryption service that is privacy- and
+    user-friendly. Using PG, uploaders nolonger have to manually distribute
+    the encryption password to the recipients. For more details see the
+    <a href='https://gitlab.com/postguard-filesender/thesis'>thesis</a> I wrote about this.
+    </p>
+    </td>
+    <td class='box'>
+    <h2>Usage download page</h2>
+    <ol id='pg_usage'>
+    <li>Choose a PG decryption attribute from the selection menu on the left.</li>
+    <li>Click the 'PostGuard download' button..</li>
+    <li>Scan the QR code and disclose you email address.</li>
+    </ol>
+    </td>
+    </tr></tbody>
+    </table>
+</div>
 <div class="box">
     <h1>{tr:download_page}</h1>
     <!-- find current user's email -->

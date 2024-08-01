@@ -218,6 +218,10 @@ abbr {
 
 /* Page elements */
 
+ol#pg_usage {
+    list-style: arabic inside;
+}
+
 #page h1 {
     width: 100%;
     font-size: 1.3em;
