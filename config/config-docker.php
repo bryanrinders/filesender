@@ -3,6 +3,8 @@
 // expensive.
 $config['max_transfer_file_size'] = 10 * 1024 * 1024;
 $config['max_transfer_encrypted_file_size'] = 10 * 1024 * 1024;
+$config['max_legacy_file_size'] =  10 * 1024 * 1024;
+$config['max_transfer_size'] = 20 * 1024 * 1024;
 
 // The src-script and src-style creates errors.
 $config['use_strict_csp'] = true;
