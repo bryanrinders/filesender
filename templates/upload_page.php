@@ -26,16 +26,16 @@ if (Config::get('upload_display_per_file_stats')) {
 
 if(Auth::isGuest()) {
     $guest = AuthGuest::getGuest();
-    
+
     if($guest->getOption(GuestOptions::EMAIL_UPLOAD_PAGE_ACCESS)) {
         if(!$guest->last_activity || $guest->last_activity < strtotime('-1 hour')) {
             // Send mail to guest the owner of the voucher
             ApplicationMail::quickSend('guest_access_upload_page', $guest->owner, $guest);
-            
+
             $guest->last_activity = time();
             $guest->save();
         }
-    }      
+    }
 }
 
 $need_recipients = true;
@@ -43,10 +43,10 @@ $allow_recipients = true;
 foreach(Transfer::allOptions() as $name => $dfn)  {
     if($dfn['available']) continue;
     if(!$dfn['default']) continue;
-    
+
     if($name == TransferOptions::ADD_ME_TO_RECIPIENTS)
         $need_recipients = false;
-    
+
     if($name == TransferOptions::GET_A_LINK)
         $allow_recipients = false;
 }
@@ -109,15 +109,15 @@ if(Auth::isGuest()) {
     <form id="upload_form" class="<?php echo $formClasses; ?>" enctype="multipart/form-data" accept-charset="utf-8" method="post" autocomplete="off" data-need-recipients="<?php echo $need_recipients ? '1' : '' ?>">
         <div class="box">
             <div class="files" id="fileslist"></div>
-            
+
             <div class="file_selector">
                 <label for="files" class="mandatory">{tr:select_file} :</label>
-                
+
                 <input id="files" name="files" type="file" multiple />
-                
+
                 <?php echo LegacyUploadProgress::getTrackingInput() ?>
             </div>
-            
+
             <div class="files_dragdrop">
                 <div class="instructions">{tr:drag_and_drop}</div>
             </div>
@@ -142,14 +142,14 @@ if(Auth::isGuest()) {
                 </div>
             </div>
 
-            
+
             <div class="files_actions">
                 <div class="<?php echo $files_actions_div_extra_class ?>">
                     <a class="clear_all" href="#">
                         {tr:clear_all}
                     </a>
                 </div>
-                
+
                 <div class="<?php echo $files_actions_div_extra_class ?>">
                     <a class="select_files" href="#">
                         {tr:select_files}
@@ -161,7 +161,7 @@ if(Auth::isGuest()) {
                     <label for="selectdir" class="select_directory  ">{tr:select_directory}</label>
                 </div>
                 <?php } ?>
-                
+
                 <div class="stats <?php echo $files_actions_div_extra_class ?>">
                     <div class="number_of_files">{tr:number_of_files} : <span class="value"></span></div>
                     <div class="size">{tr:size} : <span class="value"></span></div>
@@ -191,25 +191,25 @@ if(Auth::isGuest()) {
                     <div class="estimated_completion">{tr:estimated_completion} : <span class="value"></span></div>
                 </div>
             </div>
-            
+
         </div>
-        
+
         <table class="two_columns" id="upload_options_table">
             <tr>
                 <td class="box">
                     <div class="fieldcontainer">
                         <?php $emails = Auth::isGuest() ? array(AuthGuest::getGuest()->email) : Auth::user()->email_addresses ?>
-                        
+
                         <label for="from" class="mandatory">{tr:from} :</label>
-                        
+
                         <?php if (count($emails) > 1) { ?>
-                        
+
                         <select id="from" name="from">
                             <?php foreach ($emails as $email) { ?>
                             <option><?php echo Template::sanitizeOutputEmail($email) ?></option>
                             <?php } ?>
                         </select>
-                        
+
                         <?php } else echo Template::sanitizeOutputEmail($emails[0]) ?>
                     </div>
 
@@ -228,13 +228,13 @@ if(Auth::isGuest()) {
                             if( in_array($name, $optionsToFilter)) {
                                 return;
                             }
-                            
+
                             $default = $cfg['default'];
                             if( !$forcedOption ) {
                                 if(Auth::isSP() && !$text)
                                     $default = Auth::user()->defaultTransferOptionState($name);
                             }
-                            
+
                             $checked = $default ? 'checked="checked"' : '';
                             $disabled = $disable ? 'disabled="disabled"' : '';
                             $extraDivAttrs = '';
@@ -252,26 +252,26 @@ if(Auth::isGuest()) {
                                     return;
                                 }
                             }
-                            
+
                             echo '<div class="fieldcontainer" data-option="'.$name.'" '. $extraDivAttrs .'>';
                             if($text) {
                                 echo '    <label for="'.$name.'">'.Lang::tr($name).'</label>';
                                 echo '    <input id="'.$name.'" name="'.$name.'" type="text" value="'.htmlspecialchars($default).'" '.$disabled.'>';
-                                
+
                             } else {
                                 echo '  <input id="'.$name.'" name="'.$name.'" type="checkbox" '.$checked.' '.$disabled.' />';
                                 echo '  <label for="'.$name.'">'.Lang::tr($name).'</label>';
                             }
-                            
+
                             if($name == TransferOptions::ENABLE_RECIPIENT_EMAIL_DOWNLOAD_COMPLETE)
                                 echo '<div class="info message">'.Lang::tr('enable_recipient_email_download_complete_warning').'</div>';
                             if($name == TransferOptions::WEB_NOTIFICATION_WHEN_UPLOAD_IS_COMPLETE && Browser::instance()->isFirefox)
                                 echo '<div class="info message"><a class="enable_web_notifications" href="#">'.Lang::tr('click_to_enable_web_notifications').'</a></div>';
-                            
+
                             echo '</div>';
                         };
                     ?>
-                    
+
                     <div class="left_options">
                     <?php
                     $ops = Transfer::availableOptions();
@@ -280,43 +280,43 @@ if(Auth::isGuest()) {
                     }
                     ?>
                     </div>
-                    
+
                     <?php if($allow_recipients) { ?>
                     <div class="fieldcontainer" data-related-to="message">
                         <label for="to" class="mandatory">{tr:to} :</label>
-                        
+
                         <?php if(Auth::isGuest() && AuthGuest::getGuest()->getOption(GuestOptions::CAN_ONLY_SEND_TO_ME)) { ?>
                         <?php echo AuthGuest::getGuest()->user_email ?>
                         <?php } else { ?>
                         <div class="recipients"></div>
-                        
+
                         <input name="to" id="to" type="email" multiple title="{tr:email_separator_msg}" value="" placeholder="{tr:enter_to_email}" />
                         <?php } ?>
                     </div>
-                    
+
                     <div class="fieldcontainer" data-related-to="message">
                         <label for="subject">{tr:subject} ({tr:optional}) :</label>
-                        
+
                         <input id="subject" name="subject" type="text"/>
                     </div>
-                    
+
                     <div class="fieldcontainer" data-related-to="message">
                         <label for="message">{tr:message} ({tr:optional}) : </label>
-                        <label class="invalid" id="message_can_not_contain_urls">{tr:message_can_not_contain_urls}</label>                        
+                        <label class="invalid" id="message_can_not_contain_urls">{tr:message_can_not_contain_urls}</label>
                         <label class="invalid" id="password_can_not_be_part_of_message_warning">
-                            {tr:password_can_not_be_part_of_message_warning}</label>                        
+                            {tr:password_can_not_be_part_of_message_warning}</label>
                         <label class="invalid" id="password_can_not_be_part_of_message_error">
-                            {tr:password_can_not_be_part_of_message_error}</label>                        
+                            {tr:password_can_not_be_part_of_message_error}</label>
                         <textarea id="message" name="message" rows="4"></textarea>
                     </div>
                     <?php } ?> <!-- closing if($allow_recipients) -->
-                    
+
                     <?php if(Config::get('encryption_enabled')) { ?>
                         <div class="fieldcontainer <?php echo $encryption_checkbox_classes ?>" id="encrypt_checkbox" data-related-to="encryption">
                             <input id="encryption" name="encryption" type="checkbox" <?php echo $encryption_checkbox_checked ?> >
                             <label for="encryption" class="cursor" >{tr:file_encryption}</label>
                         </div>
-                        <div class="fieldcontainer" id="encryption_password_container">  
+                        <div class="fieldcontainer" id="encryption_password_container">
                             <label for="encryption_password" class="cursor" >{tr:file_encryption_password} : </label>
                             <input class="encryption_password" id="encryption_password" name="encryption_password" type="password" autocomplete="new-password" readonly />
                         </div>
@@ -335,19 +335,19 @@ if(Auth::isGuest()) {
                         <div class="fieldcontainer passwordvalidation" id="encryption_password_container_can_have_text_only_min_password_length_message">
                             {tr:encryption_password_container_can_have_text_only_min_password_length_message}
                         </div>
-                        
+
                         <div class="fieldcontainer" id="encryption_password_container_generate">
-                            <input id="encryption_use_generated_password"  name="encryption_use_generated_password" type="checkbox" >  
+                            <input id="encryption_use_generated_password"  name="encryption_use_generated_password" type="checkbox" >
                             <label for="encryption_use_generated_password" class="cursor" >{tr:file_encryption_generate_password}</label>
-                            
+
                         </div>
                         <div class="fieldcontainer" id="encryption_password_container_generate_again">
                             <a href="#" id="encryption_generate_password" class="">
                                 <span class="fa fa-refresh"></span>&nbsp;{tr:generate_a_different_password}
                             </a>
                         </div>
-                        <div class="fieldcontainer" id="encryption_password_show_container">  
-                            <input id="encryption_show_password" name="encryption_show_password" type="checkbox">  
+                        <div class="fieldcontainer" id="encryption_password_show_container">
+                            <input id="encryption_show_password" name="encryption_show_password" type="checkbox">
                             <label class="cursor" for="encryption_show_password">{tr:file_encryption_show_password}</label>
                         </div>
                         <div class="fieldcontainer" id="pg_encryption_checkbox_container" data-related-to="encryption">
@@ -364,16 +364,16 @@ if(Auth::isGuest()) {
                             {tr:file_encryption_description_disabled}
                         </div>
                     <?php } ?>
-                    
+
                     <div>
                         <?php if(Auth::isGuest()) { ?>
                         <input type="hidden" name="guest_token" value="<?php echo AuthGuest::getGuest()->token ?>" />
                         <input type="hidden" id="guest_options" value="<?php echo Utilities::sanitizeOutput(json_encode(AuthGuest::getGuest()->options)) ?>" />
                         <input type="hidden" id="guest_transfer_options" value="<?php echo Utilities::sanitizeOutput(json_encode(AuthGuest::getGuest()->transfer_options)) ?>" />
                         <?php } ?>
-                        
+
                     </div>
-                    <!-- <div> 
+                    <!-- <div>
                         <input type="file" class="encrypt">encrypt file</input>
                         <input type="file" class="decrypt">decrypt file</input>
                     </div> -->
@@ -383,13 +383,13 @@ if(Auth::isGuest()) {
                     <div class="basic_options">
                         <div class="fieldcontainer">
                             <label for="expires" id="datepicker_label" class="mandatory">{tr:expiry_date}:</label>
-                            
+
                             <input id="expires" name="expires" type="text" autocomplete="off" <?php if(!$expire_time_is_editable) echo " disabled "  ?>
                                    title="<?php echo Lang::trWithConfigOverride('dp_date_format_hint')->r(array('max' => Config::get('max_transfer_days_valid'))) ?>"
                                    data-epoch="<?php echo Transfer::getDefaultExpire() ?>"
                             />
                         </div>
-                        
+
                         <?php
                             if(Config::get('transfer_recipients_lang_selector_enabled')) {
                                 $opts = array();
@@ -398,30 +398,30 @@ if(Auth::isGuest()) {
                                     $selected = ($id == $code) ? 'selected="selected"' : '';
                                     $opts[] = '<option value="'.$id.'" '.$selected.'>'.Utilities::sanitizeOutput($dfn['name']).'</option>';
                                 }
-                                
+
                                 echo '<div class="fieldcontainer">';
                                 echo '  <label for="lang">{tr:recipients_notifications_language}:</label>';
                                 echo '  <select id="lang" name="lang">'.implode('', $opts).'</select>';
                                 echo '</div>';
                             }
                         ?>
-                        
+
                         <?php foreach(Transfer::availableOptions(false) as $name => $cfg) $displayoption($name, $cfg, Auth::isGuest()) ?>
                     </div>
 
-                    
+
                     <?php if(count(Transfer::availableOptions(true)) || (Config::get('terasender_enabled') && Config::get('terasender_advanced'))) { ?>
                     <div class="fieldcontainer">
                         <a class="toggle_advanced_options" href="#">{tr:advanced_settings}</a>
                     </div>
-                    
+
                     <div class="advanced_options">
                         <?php foreach(Transfer::availableOptions(true) as $name => $cfg) $displayoption($name, $cfg, Auth::isGuest()) ?>
-                        
+
                         <?php if (Config::get('terasender_enabled') && Config::get('terasender_advanced')) { ?>
                         <div class="fieldcontainer">
                             <label for="terasender_worker_count">{tr:terasender_worker_count}</label>
-                            
+
                             <input id="terasender_worker_count" type="text" value="<?php echo Config::get('terasender_worker_count') ?>"/>
                             <br />
                         </div>
@@ -440,27 +440,27 @@ if(Auth::isGuest()) {
                             }
                         } ?>
                     </div>
-                    
+
                 </td>
             </tr>
         </table>
-        
+
         <?php if (Config::get('aup_enabled')) { ?>
         <div class="aup fieldcontainer box">
             <label for="aup" title="{tr:showhide}">
                 {tr:accepttoc} [<span>{tr:showhide}</span>]
             </label>
-            
+
             <?php
             $aupChecked = '';
             if (Config::get('aup_default') || (isset($_SESSION['aup']) /*&& !$authvoucher->aVoucher()*/)) $aupChecked = 'checked="checked"';
             ?>
             <input name="aup" type="checkbox" <?php echo $aupChecked; ?> value="true"/>
-            
+
             <div class="terms">{tr:aupterms}</div>
         </div>
         <?php } ?>
-        
+
         <div class="buttons">
             <a href="#" class="start">
                 <span class="fa fa-cloud-upload fa-lg"></span> {tr:send}
@@ -489,7 +489,7 @@ if(Auth::isGuest()) {
         <script type="text/javascript" src="{path:lib/chart.js/chart.min.js}"></script>
         <script type="text/javascript" src="{path:js/graph.js}"></script>
     <?php } ?>
-    
+
     <?php if (!Config::get('disable_directory_upload')) { ?>
        <script type="text/javascript" src="{path:js/dragdrop-dirtree.js}"></script>
     <?php } ?>

@@ -41,9 +41,9 @@ $rid = 0;
 if( Utilities::isTrue(Config::get('download_verification_code_enabled'))) {
     if(array_key_exists('token', $_REQUEST)) {
         $token = $_REQUEST['token'];
-        
+
         if(Utilities::isValidUID($token)) {
-            
+
             try {
                 // Getting recipient from the token
                 $recipient = Recipient::fromToken($token); // Throws
@@ -90,13 +90,13 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
         <select id="pg_attributes_select" name="pg_attributes_select">
         </select>
     </div>
-    
+
     <?php
 
-    
+
     if(!array_key_exists('token', $_REQUEST))
         throw new TokenIsMissingException();
-    
+
     $token = $_REQUEST['token'];
     if(!Utilities::isValidUID($token))
         throw new TokenHasBadFormatException($token);
@@ -107,9 +107,9 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
         throw new TransferPresumedExpiredException();
     }
     $transfer = $recipient->transfer;
-    
+
     if($transfer->isExpired()) throw new TransferExpiredException($transfer);
-    
+
     if($transfer->status != TransferStatuses::AVAILABLE) throw new TransferNotAvailableException($transfer);
 
     $sortedFiles = $transfer->files;
@@ -118,7 +118,7 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
     $downloadLinks = array();
     $archiveDownloadLink = '#';
     $archiveDownloadLinkFileIDs = '';
-    
+
     if(empty($transfer->options['encryption'])) {
         $fileIds = array();
         foreach($transfer->files as $file) {
@@ -149,7 +149,7 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
     }
 
 
-    
+
     if( $transfer->must_be_logged_in_to_download ) {
         $user = Auth::user();
         if( !$user ) {
@@ -159,7 +159,7 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
             echo Lang::tr('must_be_logged_in_to_download_first_person');
             echo '<br/>' . $loginToDownload;
             echo '</div>';
-            
+
             $canDownload = false;
             $canDownloadAsTar = false;
             $canDownloadAsZip = false;
@@ -167,10 +167,10 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
             echo "</div>";
             return;
         }
-    } 
-    
+    }
+
     ?>
-    
+
     <div class="disclamer">
         <?php if(!$isEncrypted) { ?>
             {tr:download_disclamer}
@@ -194,7 +194,7 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
             <label for="streamsaverenabled">{tr:use_streamsaver_for_download}</label>
         </div>
     <?php } ?>
-                            
+
     <div class="verify_email_to_download">
         <h2>{tr:verify_your_email_address_to_download}</h2>
 
@@ -225,28 +225,28 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
                 </td>
             </tr>
         </table>
-        
+
     </div>
-    
-    
+
+
     <div class="general box" data-transfer-size="<?php echo $transfer->size ?>">
         <?php if(!array_key_exists('hide_sender_email', $transfer->options) ||
                  !$transfer->options['hide_sender_email']) { ?>
         <div class="from">{tr:from} : <?php echo Template::sanitizeOutputEmail($transfer->user_email) ?></div>
         <?php } ?>
-        
+
         <div class="created">{tr:created} : <?php echo Utilities::sanitizeOutput(Utilities::formatDate($transfer->created)) ?></div>
-        
+
         <div class="expires">{tr:expires} : <?php echo Utilities::sanitizeOutput(Utilities::formatDate($transfer->expires)) ?></div>
-        
+
         <div class="size">{tr:size} : <?php echo Utilities::sanitizeOutput(Utilities::formatBytes($transfer->size)) ?></div>
-        
+
         <?php if($transfer->subject) { ?>
             <div class="subject">{tr:subject} : <?php echo Utilities::sanitizeOutput($transfer->subject) ?></div>
         <?php } ?>
-        
-        <?php 
-            list($pg_password, $sanitized_message) = Utilities::sanitizeMessage($transfer->message); 
+
+        <?php
+            list($pg_password, $sanitized_message) = Utilities::sanitizeMessage($transfer->message);
             if($sanitized_message) { ?>
             <div class="message">
                 {tr:message} :
@@ -280,7 +280,7 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
                         <?php } ?>
                         </table>
                     <?php } ?>
-                    
+
                 </div>
             <?php } ?>
             </div>
@@ -315,7 +315,7 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
              data-fileaead="<?php echo $file->aead; ?>"
              data-transferid="<?php echo $transfer->id ?>"
         >
-            
+
             <?php if($canDownloadArchive) { ?>
                 <span class="select clickable fa fa-2x fa-square-o" title="{tr:select_for_archive_download}"></span>
             <?php } ?>
@@ -350,11 +350,11 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
         <?php if($canDownloadArchive) { ?>
             <div class="archive">
             <div class="archive_message">{tr:archive_message}</div>
-            
+
             <div class="mac_archive_message">
                 {tr:mac_archive_message}
             </div>
-            
+
             <div class="archive_download_frame">
             <a rel="nofollow" href="<?php echo Utilities::sanitizeOutput($archiveDownloadLink) ?>" class="archive_download" title="{tr:archive_download}">
                 <span class="fa fa-2x fa-download"></span>
@@ -380,7 +380,7 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
                 <span class="fa fa-2x fa-download"></span>
                 {tr:archive_tar_download}
             </a>
-            </div>            
+            </div>
             <?php if($showdownloadlinks) { ?>
             <br>
             <span class="directlinkArchive">
@@ -405,10 +405,10 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
                     </button>
                 </form>
             </div>
-            
+
             <span class="downloadprogress"/>
         </div>
-    <?php } ?>    
+    <?php } ?>
         <div class="transfer" data-id="<?php echo $transfer->id ?>"></div>
         <div class="rid" data-id="<?php echo $rid ?>"></div>
     </div>
