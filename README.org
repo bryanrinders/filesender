@@ -21,4 +21,4 @@ functionality is with docker.
   docker-compose -f docker-compose.yaml up -d --build
 #+end_src
 
-Then open your browser and go to [[https://localhost:8443/filesender]].
+Then open your browser and go to [[https://localhost:8443]].

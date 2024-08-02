@@ -43,7 +43,10 @@ COPY config-templates/ ./config-templates
 # simplesaml is skipped fake logins are setup in config/config.php
 RUN cp config-templates/apache/filesender.conf /etc/apache2/sites-available/ \
     && a2enmod alias headers ssl \
-    && a2ensite default-ssl filesender
+    && a2ensite default-ssl filesender \
+    # make the website available under https://<your-domain>, without
+    # the trailing /filesender
+    && sed -i 's|\(DocumentRoot\) .*|\1 /opt/filesender/filesender/www|' /etc/apache2/sites-available/default-ssl.conf
 
 # TEST if this works; install step 7
 RUN cp config-templates/filesender-php.ini /usr/local/etc/php/php.ini

@@ -35,7 +35,7 @@ if( $testing ) {
 
 // The port number in the site_url must be the same as the one
 // specified in the docker=-compose.yaml, to prevent CORS errors.
-$config['site_url'] = 'https://localhost:8443/filesender';
+$config['site_url'] = 'https://localhost:8443';
 $config['admin'] = 'root@localhost.localdomain';
 $config['admin_email'] ='root@localhost.localdomain';
 $config['email_reply_to'] ='root@localhost.localdomain';
