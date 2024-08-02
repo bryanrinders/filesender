@@ -22,7 +22,9 @@ services:
       context: .
       dockerfile: ./docker/Dockerfile.filesender
     ports:
-      - 8443:443
+      # use `FS_PORT=443 docker-compose up ...` to change the port
+      # mapping used by docker
+      - ${FS_PORT:-8443}:443
     volumes:
       # - ./log:/opt/filesender/filesender/log
       # - .files:/opt/filesender/filesender/files
