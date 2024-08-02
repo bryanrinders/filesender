@@ -75,35 +75,27 @@ if(Auth::isGuest()) {
 ?>
 
 <div class='box'>
-    <table class='two_columns' id='pg_intro'>
-    <tbody><tr><td class='box'>
-    <h2>Prototype: Filesender + PostGuard</h2>
-    <p>
-    This is a prototype, integrating <a href='https://postguard.eu'>PostGuard</a> (PG) into
-    Filesender. PG is an encryption service that is privacy- and
-    user-friendly. Using PG, uploaders nolonger have to manually distribute
-    the encryption password to the recipients. For more details see the
-    <a href='https://gitlab.com/postguard-filesender/thesis'>thesis</a> I wrote about this.
-    </p>
-    <h2>Note</h2>
-    <p>PostGuard only works when uploading normal files, not archives such as zip and tar.</p>
+  <table class='two_columns' id='pg_intro'>
+  <tbody><tr>
+    <td class='box'>
+      <?php include('postguard_intro.html'); ?>
     </td>
     <td class='box'>
-    <h2>Usage upload page</h2>
-    <ol id='pg_usage'>
-    <li>Check 'File encryption'.</li>
-    <li>Enter of generate a password.</li>
-    <li>Check 'PostGuard encryption'.</li>
-    <li>Specify recipient email address(es).</li>
-    <li>Select one or more file(s) (max file size: 10MB; max transfer size: 20MB).</li>
-    <li>Choose a PG signing attribute from the selection menu on the left.</li>
-    <li>Send.</li>
-    <li>Scan the QR code and disclose you email address.</li>
-    <li>Follow the link that appears on your screen to the download page.</li>
-    </ol>
+      <h2>Usage upload page</h2>
+      <ol class='pg_usage'>
+        <li>Check 'File encryption'.</li>
+        <li>Enter of generate a password.</li>
+        <li>Check 'PostGuard encryption'.</li>
+        <li>Specify recipient email address(es).</li>
+        <li>Select one or more file(s) (max file size: 10MB; max transfer size: 20MB).</li>
+        <li>Choose a PG signing attribute from the selection menu on the left.</li>
+        <li>Send.</li>
+        <li>Scan the QR code and disclose you email address.</li>
+        <li>Follow the link that appears on your screen, to the download page.</li>
+      </ol>
     </td>
-    </tr></tbody>
-    </table>
+  </tr></tbody>
+  </table>
 </div>
 <div class="box">
     <form id="upload_form" class="<?php echo $formClasses; ?>" enctype="multipart/form-data" accept-charset="utf-8" method="post" autocomplete="off" data-need-recipients="<?php echo $need_recipients ? '1' : '' ?>">

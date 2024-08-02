@@ -218,8 +218,14 @@ abbr {
 
 /* Page elements */
 
-ol#pg_usage {
-    list-style: arabic inside;
+ol.pg_usage {
+    list-style: arabic outside;
+    padding-left: 15px;
+}
+
+ul.pg_note {
+    list-style: disc outside;
+    padding-left: 15px;
 }
 
 #page h1 {
