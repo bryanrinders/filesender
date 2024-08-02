@@ -1,3 +1,11 @@
+# Usage: SITE_URL=<your-domain> FS_PORT=<port-number> docker-compose up ...
+#
+# e.g. SITE_URL=filesender.example.com FS_PORT=443 docker-compose up ...
+#
+# Both arguments are optional; if you change the port number from the
+# default 8443 you must also change the SITE_URL to reflect that
+# change.
+
 services:
   database:
     image: postgres:buster
@@ -21,6 +29,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile.filesender
+      args:
+        SITE_URL: ${SITE_URL}
     ports:
       # use `FS_PORT=443 docker-compose up ...` to change the port
       # mapping used by docker

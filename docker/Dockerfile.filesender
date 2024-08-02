@@ -20,6 +20,9 @@ RUN apt update \
 # && curl -fsSL https://deb.nodesource.com/setup_21.x | bash - \
 # && apt-get install -y nodejs \
 
+# If site is not specified localhost is used with port 8443.
+ARG SITE_URL
+
 RUN mkdir -pv /opt/filesender/filesender/config
 # RUN mkdir -pv /opt/filesender/simplesamlphp
 
@@ -38,6 +41,10 @@ RUN mkdir tmp log files \
     && chmod o-rwx tmp files log config/config.php \
     && chown www-data:www-data tmp log files \
     && chgrp www-data config/config.php
+
+RUN if [ -n "${SITE_URL}" ]; \
+    then sed -i "s|\(https://\)localhost:8443|\1${SITE_URL}|" config/config.php; \
+    fi
 
 COPY config-templates/ ./config-templates
 # simplesaml is skipped fake logins are setup in config/config.php
