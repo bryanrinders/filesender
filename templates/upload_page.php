@@ -85,6 +85,8 @@ if(Auth::isGuest()) {
     the encryption password to the recipients. For more details see the
     <a href='https://gitlab.com/postguard-filesender/thesis'>thesis</a> I wrote about this.
     </p>
+    <h2>Note</h2>
+    <p>PostGuard only works when uploading normal files, not archives such as zip and tar.</p>
     </td>
     <td class='box'>
     <h2>Usage upload page</h2>
