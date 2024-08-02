@@ -346,7 +346,7 @@ if(Auth::isGuest()) {
                             <input id="pg_encryption" name="pg_encryption" type="checkbox">
                             <label for="pg_encryption" class="cursor" >Use PostGuard for encryption</label>
                             <div class="fieldcontainer" id="pg_encryption_description_container">
-                            PostGuard description goes here.
+                            PostGuard is an encryption service that simplifies the en- and decryption process.
                             </div>
                         </div>
                         <div class="fieldcontainer" id="encryption_description_container">
