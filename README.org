@@ -6,10 +6,10 @@
 #+PROPERTY: header-args :exports code :eval no-export
 
 This repo contains a prototype, integrating [[https://postguard.eu][PostGuard]] (PG) into
-Filesender. PG is an encryption service that is privacy- and
-user-friendly. Using PG, uploaders nolonger have to manually distribute
-the encryption password to the recipients. For more details see the
-[[https://gitlab.com/postguard-filesender/thesis][thesis]] I wrote about this.
+Filesender (FS). PG is an encryption service that is privacy- and
+user-friendly. Using PG, uploaders nolonger have to manually
+distribute the encryption password to the recipients. For more details
+see the [[https://gitlab.com/postguard-filesender/thesis][thesis]] I wrote about this.
 
 * Usage
 The easiest way to get started and try out the newly added
@@ -22,3 +22,40 @@ functionality is with docker.
 #+end_src
 
 Then open your browser and go to [[https://localhost:8443]].
+
+* Deploy the prototype
+To deploy the prototype I assume you already have a domain name and a
+server.
+
+The first thing we need to do is generate SSL certificates.
+
+#+begin_src sh
+  EMAIL=<your-email-address> \
+      SITE_URL=<your-domain-name> \
+      FS_PORT=443 \
+      docker compose -f docker-compose.yaml \
+                     -f docker-compose-certbot.yaml \
+                     up --build --no-color
+#+end_src
+
+*NOTE:* if you have problems getting an SSL certificate, consider
+appending =--dry-run= to the =command:= defined in
+=docker-compose-certbot.yaml=, or risk getting your domain banned for
+several days by certbot.
+
+=EMAIL= is used to generate the SSL certificate with ~certbot~. You
+should, after half a minute or so, see the certbot container exit with
+=0= in which case the SSL certificates, etc will be located in
+=letsencrypt/certs/= on your local file system. You can now kill the
+docker command with =Ctrl c=.
+
+Now start docker again, but in detached mode:
+
+#+begin_src sh
+  SITE_URL=<your-domain-name> \
+      FS_PORT=443 \
+      docker compose -f docker-compose.yaml \
+                     up -d --build --no-color
+#+end_src
+
+Now your FS should be available under your domain with =HTTPS=.

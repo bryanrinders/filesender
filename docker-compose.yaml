@@ -35,6 +35,7 @@ services:
       # use `FS_PORT=443 docker-compose up ...` to change the port
       # mapping used by docker
       - ${FS_PORT:-8443}:443
+      - 80:80
     volumes:
       # - ./log:/opt/filesender/filesender/log
       # - .files:/opt/filesender/filesender/files
@@ -43,6 +44,7 @@ services:
       - ./templates:/opt/filesender/filesender/templates:ro
       - ./www:/opt/filesender/filesender/www
       - postguardjs:/opt/filesender/filesender/www/js/postguard:ro
+      - ./letsencrypt:/opt/filesender/filesender/www/letsencrypt
   postguard:
     build:
       context: .

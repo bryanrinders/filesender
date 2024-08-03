@@ -58,6 +58,14 @@ RUN cp config-templates/apache/filesender.conf /etc/apache2/sites-available/ \
 # TEST if this works; install step 7
 RUN cp config-templates/filesender-php.ini /usr/local/etc/php/php.ini
 
+COPY letsencrypt/ ./www/letsencrypt
+
+# if ssl certificates are available, use them
+RUN if [ -n "$(find ./www/letsencrypt/certs/live/${SITE_URL} -name '*.pem')" ]; then \
+        certs_dir="/opt/filesender/filesender/www/letsencrypt/certs/live/${SITE_URL}"; \
+        sed -iE "s|^\(\s*SSLCertificateFile\).*|\1 ${certs_dir}/fullchain.pem|; s|^\(\s*SSLCertificateKeyFile\).*|\1 ${certs_dir}/privkey.pem|" /etc/apache2/sites-available/default-ssl.conf; \
+    fi
+
 COPY .php_cs.dist ./.php_cs.dist
 # COPY saucelabs_connect/ ./connect
 # COPY docs/      ./docs
