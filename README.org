@@ -21,13 +21,16 @@ functionality is with docker.
   docker-compose -f docker-compose.yaml up -d --build
 #+end_src
 
-Then open your browser and go to [[https://localhost:8443]].
+Then open your browser and go to [[https://localhost:8443]]. Instructions
+on how to use FS itself with PG are included on the relevant web
+pages.
 
 * Deploy the prototype
 To deploy the prototype I assume you already have a domain name and a
 server.
 
-The first thing we need to do is generate SSL certificates.
+The first thing we need to do is generate SSL certificates for your
+domain, to make sure it can be reached over HTTPS.
 
 #+begin_src sh
   EMAIL=<your-email-address> \
