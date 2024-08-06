@@ -68,7 +68,7 @@ $showdownloadlinks = Utilities::isTrue(Config::get('download_show_download_links
       <ol class='pg_usage'>
         <li>Choose a PG decryption attribute from the selection menu on the left.</li>
         <li>Click the 'PostGuard download' button..</li>
-        <li>Scan the QR code and disclose you email address.</li>
+        <li>Scan the QR code and share your email address.</li>
       </ol>
     </td>
   </tr></tbody>

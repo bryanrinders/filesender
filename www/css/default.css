@@ -228,6 +228,13 @@ ul.pg_note {
     padding-left: 15px;
 }
 
+.pg_usage, .pg_note {
+    line-height: 1.2em;
+}
+.pg_usage strong, .pg_note strong {
+    font-weight: bold;
+}
+
 #page h1 {
     width: 100%;
     font-size: 1.3em;

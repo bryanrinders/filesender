@@ -73,7 +73,6 @@ if(Auth::isGuest()) {
 
 
 ?>
-
 <div class='box'>
   <table class='two_columns' id='pg_intro'>
   <tbody><tr>
@@ -83,14 +82,46 @@ if(Auth::isGuest()) {
     <td class='box'>
       <h2>Usage upload page</h2>
       <ol class='pg_usage'>
-        <li>Check 'File encryption'.</li>
-        <li>Enter of generate a password.</li>
-        <li>Check 'PostGuard encryption'.</li>
+        <li>Check 'PostGuard encryption'.
+          <br> This cause Filesender to generate a random password,
+          which can be used on the download page to decrypt the
+          file(s). However this prototype showcases PostGuard and
+          hence it is <strong>not</strong> necessary to save it.
+        </li>
         <li>Specify recipient email address(es).</li>
-        <li>Select one or more file(s) (max file size: 10MB; max transfer size: 20MB).</li>
-        <li>Choose a PG signing attribute from the selection menu on the left.</li>
+        <li>Select one or more file(s) (max file size: 10MB; max
+          transfer size: 20MB).
+        </li>
+        <li>Choose a PG signing attribute from the selection menu on
+          the left.
+        </li>
         <li>Send.</li>
-        <li>Scan the QR code and disclose you email address.</li>
+        <li>Scan the QR code and share your email address.
+          <br><br><strong>Note:</strong> if you have never used Yivi
+          before, you'll have to install it on your smartphone, open
+          the app and follow the on screen instructions to setup your
+          Yivi account.
+          <br>Now, you can scan the QR that is shown on your computer
+          screen. Because you do not have any attributes linked to you
+          account, Yivi asks you to obtain the email address your
+          picked in step 4.<br><br>
+          <ol class='pg_usage'>
+            <li>Click on "Obtain data", then on "Add";</li>
+            <li>Scroll all the way to the bottom and fill in the email
+              address you picked in step 4 in the <emp>email</emp> input
+              box.
+            </li>
+            <li>Click "Issue" at the bottom of the page, click "Open
+              IRMA app" (IRMA is the old name for Yivi) and finally click
+              "Add data".
+            </li>
+          </ol>
+          <br>Congratulations, you have obtain you first Yivi attribute.
+          <br><br>To now share this email address: click "next step" then
+          "Share data" followed by "share". You have now shared your
+          email address with PostGuard and the encryption and upload
+          process will begin.
+        </li>
         <li>Follow the link that appears on your screen, to the download page.</li>
       </ol>
     </td>
