@@ -1753,7 +1753,6 @@ $(function() {
         $('#encryption_password_container_generate').slideToggle();
         $('#encryption_password_show_container').slideToggle();
         $('#encryption_description_container').slideToggle();
-        $('#pg_encryption_checkbox_container').slideToggle();
         filesender.ui.transfer.encryption = filesender.ui.nodes.encryption.toggle.is(':checked');
         filesender.ui.files.checkEncryptionPassword(filesender.ui.nodes.encryption.password, true );
     }
@@ -1764,11 +1763,10 @@ $(function() {
         $('#encryption_password_container_generate').slideToggle();
         $('#encryption_password_show_container').slideToggle();
         $('#encryption_description_container').slideToggle();
-        $('#pg_encryption_checkbox_container').slideToggle();
         filesender.ui.transfer.encryption = filesender.ui.nodes.encryption.toggle.is(':checked');
 
         // make sure postguard encryption is turned off when unchecking normal encryption
-        if(!filesender.ui.transfer.encryption && filesender.ui.nodes.encryption.use_pg_encryption) {
+        if(!filesender.ui.transfer.encryption && filesender.ui.nodes.encryption.use_pg_encryption.is(':checked')) {
             filesender.ui.nodes.encryption.use_pg_encryption.click()
         }
 
@@ -1841,9 +1839,17 @@ $(function() {
         filesender.ui.transfer.use_pg_encryption = filesender.ui.nodes.encryption.use_pg_encryption.is(':checked');
             var gal = form.find('input[name="get_a_link"]')
         if(filesender.ui.transfer.use_pg_encryption) {
-            // postguard needs recipients to be specified. 
+            // postguard needs recipients to be specified.
             if(gal.is(':checked')) { gal.click() }
             gal.attr('disabled', true)
+            // check file encryption
+            if(!filesender.ui.nodes.encryption.toggle.is(':checked')) {
+                filesender.ui.nodes.encryption.toggle.click()
+            }
+            // check generate password
+            if(!filesender.ui.nodes.encryption.use_generated.is(':checked') && !filesender.ui.nodes.encryption.password.val()) {
+                filesender.ui.nodes.encryption.use_generated.click()
+            }
         } else {
             gal.attr('disabled', false)
         }
@@ -1902,7 +1908,7 @@ function startUpload()
                                           },
                                           function() { // cancel
                                           });
-                    
+
                     // dailog will start the upload if the user confirms the action
                     // so we fall through here.
                     return false;
